@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% for c in ticket_comments.comments %}
+    <div class="comment">
+        <div class="date">{{ c.updated }}</div>
+        <strong>{{ c.user_comment }}</strong>
+        <p>{{ c.body|linebreaks }}</p>
+    </div>
+    {% empty %}
+        <p>No comments here yet :(</p>
+    {% endfor %}
+</body>
+</html>

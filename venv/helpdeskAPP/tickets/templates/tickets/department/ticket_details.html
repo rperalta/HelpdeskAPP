@@ -1,0 +1,75 @@
+{% extends "tickets/base.html" %}
+{% load static %}
+
+{% block title %}
+    ticket
+{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+  <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3" href="{% url 'tickets:department_list' %}">Hilo Medical Center</a>
+  <!--<button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-toggle="collapse" data-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>-->
+  <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
+  {% if user.is_authenticated %}
+  <!--<p>{{ user.username }} |<a href="{% url 'logout'%}?next={{request.path}}">Sign out</a></p>-->
+  <ul class="navbar-nav px-3">
+    <li class="nav-item text-nowrap">
+      <a class="nav-link" href="#">{{ user.username }}</a>
+    </li>
+  </ul>
+  <ul class="navbar-nav px-3">
+    <li class="nav-item text-nowrap">
+      <a class="nav-link" href="{% url 'logout'%}?next=/accounts/login">Sign out</a>
+      <!--<p class="nav-link">{{ user.username }}</p>
+      <a class="nav-link" href="{% url 'logout'%}?next={{request.path}}">Sign out</a>-->
+    </li>
+  </ul>
+    {% else %}
+    <ul class="navbar-nav px-3">
+        <li class="nav-item text-nowrap">
+            <a class="nav-link" href="{% url 'login'%}?next={{request.path}}">Sign in</a>
+        </li>
+    </ul>
+    {% endif %}
+</nav>
+
+
+{% if user.is_authenticated %}
+<div class="container-fluid">
+  <div class="row">
+
+
+      <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+<h1>Ticket #{{ object.custom_id }} - {{ object.title }}</h1>
+<p>Requestor: {{ object.author }}</p>
+<p>Published date: {{ object.created }}</p>
+<p>Last updated: {{ object.updated }}</p>
+<p>{{ object.body }}</p>
+
+          {% for d in department %}
+          <a class="btn btn-light" href="{% url 'tickets:update_ticket' d.id ticket.id %}">Edit</a>
+          {% endfor %}
+
+{% for c in comments %}
+    <div class="comment">
+        <div class="date">{{ c.updated }}</div>
+        <strong>{{ c.user_comment }}</strong>
+        <p>{{ c.body|linebreaks }}</p>
+    </div>
+    {% empty %}
+        <p>No comments here yet :(</p>
+    {% endfor %}
+          <form method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+      {{ comment_form }}
+      <button class="btn btn-info" type="submit">Add comment <i class="fas fa-comments"></i></button>
+    </div>
+  </form>
+ {% endif %}
+          </main>
+  </div>
+</div>
+{% endblock %}
