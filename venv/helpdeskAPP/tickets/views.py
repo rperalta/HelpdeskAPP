@@ -28,6 +28,26 @@ class MyTicketList(ListView):
         return queryset
 
 
+class AllTickets(ListView):
+    template_name = 'tickets/department/all_tickets.html'
+    context_object_name = 'all_tickets'
+    # queryset = Department.objects.all().prefetch_related('ticket_set')
+
+    def get_queryset(self):
+        all_data = []
+        departments = Department.objects.all()
+        tickets = Ticket.objects.all().filter(assigned_to=self.request.user)
+        for department in departments:
+            department_object = {}
+            ticket_object = [tickets.filter(department_id=department)]
+            department_object['department'] = department
+            department_object['ticket'] = ticket_object
+            all_data.append(department_object)
+
+        queryset = {'all_data': all_data}
+        return queryset
+
+
 class CreateTicket(CreateView):
     template_name = 'tickets/department/submit_ticket.html'
     form_class = TicketForm

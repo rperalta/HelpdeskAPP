@@ -21,10 +21,10 @@
             <ul class="list-unstyled components">
                 <p>Dummy Heading</p>
                 <li class="active">
-                    <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Home</a>
+                    <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">My Tickets</a>
                     <ul class="collapse list-unstyled" id="homeSubmenu">
                         <li>
-                            <a href="#">Home 1</a>
+                            <a href="{% url 'tickets:all_tickets' %}">All Tickets</a>
                         </li>
                         <li>
                             <a href="#">Home 2</a>
@@ -112,7 +112,7 @@
 
             <section class="jumbotron text-center">
                 <div class="container">
-                    <h1 class="jumbotron-heading">Welcome to the helpdesk</h1>
+                    <h1 class="jumbotron-heading">Welcome to helpdesk</h1>
                     <p class="lead text-muted">How may we assist you?</p>
                 </div>
             </section>
@@ -120,20 +120,20 @@
             {% if department %}
             <h1>{{ department.department_name }}</h1>
             {% else %}
-            <div class="album py-5 bg-light">
+            <div class="album bg-light">
               <div class="container">
 
-                <div class="row">
+                <div class="row justify-content-md-center">
                   {% for d in departments %}
                   {% if department.slug == d.slug %} class="selected" {% endif %}
                   <div class="col-md-4">
                     <div class="card mb-4 box-shadow">
                      <img src="{{ d.department_image.url }}">
-                      <div class="card-body align-self-center" style="text-align:center">
+                      <div class="card-body align-self-center">
                         <p class="card-text">Place department description here.</p>
-                        <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-center">
                           <div class="btn-group">
-                            <a href="{{ d.get_absolute_url }}" class="btn btn-primary">{{ d.department_name }} Home page</a>
+                            <a href="{% url 'tickets:create_ticket' d.slug d.id %}" class="btn btn-primary">Submit Ticket!</a>
                           </div>
                         </div>
                       </div>
@@ -145,24 +145,6 @@
             </div>
             {% endif %}
 
-            <h2>Collapsible Sidebar Using Bootstrap 4</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-
-            <div class="line"></div>
-
-            <h2>Lorem Ipsum Dolor</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-
-            <div class="line"></div>
-
-            <h2>Lorem Ipsum Dolor</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-
-            <div class="line"></div>
-
-            <h3>Lorem Ipsum Dolor</h3>
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
         </div>
     </div>
 

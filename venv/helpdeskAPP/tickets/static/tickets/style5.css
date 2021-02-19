@@ -230,5 +230,22 @@ a.article, a.article:hover {
     #sidebarCollapse.active span:last-of-type {
         transform: rotate(-45deg) translate(1px, -1px);
     }
+}
 
+#tableOne th {
+  background-color: #009999;
+  color: white;
+}
+
+.table-fixed {}
+
+#tableOne tbody {
+  height: 100px;
+  overflow: auto;
+}
+
+#tableOne thead,
+.tbody {
+  /*display: block;*/
+  display: table-header-group;
 }

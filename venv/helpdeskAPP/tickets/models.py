@@ -15,6 +15,9 @@ class Department(models.Model):
         verbose_name = 'department'
         verbose_name_plural = 'departments'
 
+    def __int__(self):
+        return self.id
+
     def __str__(self):
         return self.department_name
 
@@ -59,7 +62,7 @@ class Ticket(models.Model):
         ('C', 'Critical'),
     )
     category_id = models.ForeignKey(Category, on_delete=models.CASCADE)
-    department_id = models.ForeignKey(Department, on_delete=models.CASCADE)
+    department_id = models.ForeignKey(Department, related_name='departments', on_delete=models.CASCADE)
     subcategory_id = models.ForeignKey(Subcategory, on_delete=models.CASCADE)
     custom_id = models.IntegerField()
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='N')
