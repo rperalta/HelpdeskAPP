@@ -3,6 +3,7 @@ from django.views.generic import ListView, CreateView, UpdateView, DetailView
 from django.urls import reverse_lazy
 from django.shortcuts import render, get_object_or_404
 from .models import Department, Ticket, Category, Subcategory, Comment
+from django.template.loader import render_to_string
 
 from .forms import TicketForm, UpdateTicketForm, CommentForm
 
@@ -48,28 +49,61 @@ class AllTickets(ListView):
         return queryset
 
 
-class CreateTicket(CreateView):
-    template_name = 'tickets/department/submit_ticket.html'
-    form_class = TicketForm
-    queryset = Ticket.objects.all()
+# class CreateTicket(CreateView):
+#     template_name = 'tickets/department/submit_ticket.html'
+#     form_class = TicketForm
+#     queryset = Ticket.objects.all()
+#
+#     def get_form_kwargs(self):
+#         kwargs = super(CreateTicket, self).get_form_kwargs()
+#         kwargs.update(self.kwargs)
+#         return kwargs
+#
+#     def dispatch(self, request, *args, **kwargs):
+#         self.department_id = get_object_or_404(Department, pk=kwargs['department_id'])
+#         return super().dispatch(request, *args, **kwargs)
+#
+#     def form_valid(self, form):
+#         form.instance.author = self.request.user
+#         form.instance.department_id = self.department_id
+#         form.instance.custom_id = Ticket.objects.filter(department_id=form.instance.department_id).count() + 1
+#         return super(CreateTicket, self).form_valid(form)
+#
+#     def get_success_url(self, **kwargs):
+#         return 'my_ticket_list'
 
-    def get_form_kwargs(self):
-        kwargs = super(CreateTicket, self).get_form_kwargs()
-        kwargs.update(self.kwargs)
-        return kwargs
+def save_ticket_form(request, form, template_name, department_id, user, custom_id):
+    data = dict()
+    if request.method == 'POST':
+        if form.is_valid():
+            # form.instance.department_id = department_id
+            # form.instance.author = user
+            # form.instance.custom_id = Ticket.objects.filter(department_id=department_id).count() + 1
+            # print(form)
+            ticket = form.save(commit=False)
+            ticket.author = user
+            ticket.save()
+            print(ticket)
+            data['form_is_valid'] = True
+            # tickets = Ticket.objects.all()
+            # data['html_ticket_list'] = render_to_string('tickets/department/my_ticket_list.html', {'tickets': tickets})
+            # return render(request, 'tickets/department/my_ticket_list.html')
+        else:
+            data['form_is_valid'] = False
+    context = {'form': form}
+    data['html_form'] = render_to_string(template_name, context, request=request)
+    return JsonResponse(data)
 
-    def dispatch(self, request, *args, **kwargs):
-        self.department_id = get_object_or_404(Department, pk=kwargs['department_id'])
-        return super().dispatch(request, *args, **kwargs)
 
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        form.instance.department_id = self.department_id
-        form.instance.custom_id = Ticket.objects.filter(department_id=form.instance.department_id).count() + 1
-        return super(CreateTicket, self).form_valid(form)
-
-    def get_success_url(self, **kwargs):
-        return 'my_ticket_list'
+def ticket_create(request, department_slug, department_id):
+    department = get_object_or_404(Department, slug=department_slug, id=department_id)
+    user = request.user
+    custom_id = Ticket.objects.filter(department_id=department_id).count() + 1
+    if request.method == 'POST':
+        form = TicketForm(request.POST, instance=department)
+    else:
+        form = TicketForm(instance=department)
+    return save_ticket_form(request, form, 'tickets/department/submit_ticket.html', department_id, user, custom_id)
 
 
 class TicketDetailView(DetailView):
@@ -153,3 +187,6 @@ class CreateComment(CreateView):
 
     def get_success_url(self, **kwargs):
         return 'ticket_detail'
+
+# class TransferTicket(CreateView):
+#     template

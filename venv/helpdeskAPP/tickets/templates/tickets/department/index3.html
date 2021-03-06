@@ -1,7 +1,6 @@
 {% extends "tickets/base.html" %}
 {% load static %}
-
-<link rel="stylesheet" href="https://npmcdn.com/react-bootstrap-table/dist/react-bootstrap-table.min.css">
+{% load crispy_forms_tags %}
 
 {% block title %}
   {% if department %}
@@ -112,50 +111,53 @@
                 </div>
             </nav>
 
-            {% for d in all_tickets.all_data %}
-            <table class="table table-responsive-sm table-hover" id="tableOne">
-                <h3>{{ d.department }}</h3>
-                <thead class="thead-light">
-                  <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">Title</th>
-                    <th scope="col">Owner</th>
-                    <th scope="col">Agent</th>
-                    <th scope="col">Created</th>
-                    <th scope="col">Due</th>
-                    <th scope="col">Updated</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Edit</th>
-                  </tr>
-                </thead>
-                <tbody>
-                {% for tickets in d.ticket %}
-                {% for t in tickets %}
-                  <tr>
-                      <th scope="row">{{ t.custom_id }}</th>
-                      <td><a class="btn btn-link" href="{% url 'tickets:ticket_detail' d.department.id t.id %}">{{ t.title }}</a></td>
-                      <td>{{ t.author }}</td>
-                      <td>{{ t.assigned_to }}</td>
-                      <td>{{ t.created|date:"M d, Y" }}</td>
-                      <td>{{ t.due_date|date:"M d, Y" }}</td>
-                      <td>{{ t.updated|date:"M d, Y" }}</td>
-                      <td>{{ t.get_status_display }}</td>
-                      <td><a class="btn btn-light" href="{% url 'tickets:update_ticket' d.department.id t.id %}">Edit</a></td>
-                  </tr>
-                {% empty %}
-                    <tr>
-                        <td colspan="7" class="text-center bg-warning">No data available</td>
-                    </tr>
-                {% endfor %}
-                {% endfor %}
-                </tbody>
-              </table>
-            {% endfor %}
+            <section class="jumbotron text-center">
+                <div class="container">
+                    <h1 class="jumbotron-heading">Welcome to helpdesk</h1>
+                    <p class="lead text-muted">How may we assist you?</p>
+                </div>
+            </section>
+
+            {% if department %}
+            <h1>{{ department.department_name }}</h1>
+            {% else %}
+            <div class="album bg-light">
+              <div class="container">
+
+                <div class="row justify-content-md-center">
+                  {% for d in departments %}
+                  {% if department.slug == d.slug %} class="selected" {% endif %}
+                  <div class="col-md-4">
+                    <div class="card mb-4 box-shadow">
+                     <img src="{{ d.department_image.url }}">
+                      <div class="card-body align-self-center">
+                        <p class="card-text">Place department description here.</p>
+                        <div class="d-flex justify-content-center">
+                          <div class="btn-group">
+                              <!-- Button trigger modal -->
+<!--                              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">-->
+<!--                                  Submit Ticket-->
+<!--                              </button>-->
+                            <a href="{% url 'tickets:create_ticket' d.slug d.id %}" class="btn btn-primary">Submit Ticket!</a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 
-
-    <link rel="stylesheet" href="https://npmcdn.com/react-bootstrap-table/dist/react-bootstrap-table.min.css">
+    <!-- jQuery CDN - Slim version (=without AJAX) -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <!-- Popper.JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
 
     <script type="text/javascript">
         $(document).ready(function () {
@@ -165,5 +167,4 @@
             });
         });
     </script>
-
 {% endblock %}

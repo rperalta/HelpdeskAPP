@@ -1,5 +1,6 @@
 {% extends "tickets/base.html" %}
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block title %}
   {% if department %}
@@ -133,7 +134,13 @@
                         <p class="card-text">Place department description here.</p>
                         <div class="d-flex justify-content-center">
                           <div class="btn-group">
-                            <a href="{% url 'tickets:create_ticket' d.slug d.id %}" class="btn btn-primary">Submit Ticket!</a>
+                              <!-- Button trigger modal -->
+<!--                              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">-->
+<!--                                  Submit Ticket-->
+<!--                              </button>-->
+                            <button type="button" data-url="{% url 'tickets:create_ticket' d.slug d.id %}" class="btn btn-primary js-submit-ticket">
+                               Submit Ticket!
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -144,12 +151,19 @@
               </div>
             </div>
             {% endif %}
-
         </div>
     </div>
 
+    <div class="modal fade" id="modal-ticket">
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+      </div>
+    </div>
+  </div>
+
+
     <!-- jQuery CDN - Slim version (=without AJAX) -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <!-- Popper.JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
     <!-- Bootstrap JS -->
@@ -162,5 +176,49 @@
                 $(this).toggleClass('active');
             });
         });
+
+        $(function () {
+            var loadForm = function () {
+            var btn = $(this);
+            $.ajax({
+              url: btn.attr('data-url'),
+              type: 'get',
+              dataType: 'json',
+              beforeSend: function () {
+                $("#modal-ticket").modal("show");
+              },
+              success: function (data) {
+                $("#modal-ticket .modal-content").html(data.html_form);
+              }
+            });
+          };
+
+          var saveForm = function () {
+            var form = $(this);
+            $.ajax({
+              url: form.attr("action"),
+              data: form.serialize(),
+              type: form.attr("method"),
+              dataType: 'json',
+              success: function (data) {
+                if (data.form_is_valid) {
+                  $("#modal-ticket").modal("hide");
+                }
+                else {
+                  $("#modal-ticket .modal-content").html(data.html_form);
+                }
+              }
+            });
+            return false;
+          };
+
+         // Create ticket
+         $(".js-submit-ticket").click(loadForm);
+         $("#modal-ticket").on("submit", ".js-ticket-create-form", saveForm);
+
+        });
+
+
+
     </script>
 {% endblock %}

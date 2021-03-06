@@ -8,14 +8,11 @@ class TicketForm(forms.ModelForm):
     class Meta:
         model = Ticket
         fields = ['category_id', 'subcategory_id', 'status', 'priority', 'title', 'assigned_to', 'body']
-        exclude = ['department_id', 'slug', 'author', 'custom_id']
+        exclude = ['department_id', 'author', 'custom_id']
 
     def __init__(self, *args, **kwargs):
-        # print(kwargs)
-        department_slug = kwargs.pop('department_slug')
-        department_id = kwargs.pop('department_id')
         super(TicketForm, self).__init__(*args, **kwargs)
-        self.fields['category_id'].queryset = Category.objects.all().filter(department_id=department_id)
+        self.fields['category_id'].queryset = Category.objects.all().filter(department_id=self.instance.pk)
         self.fields['subcategory_id'].queryset = Subcategory.objects.none()
 
         if 'category_id' in self.data:
@@ -24,9 +21,8 @@ class TicketForm(forms.ModelForm):
                 self.fields['subcategory_id'].queryset = Subcategory.objects.filter(category_id=category_id).order_by('subcategory_name')
             except (ValueError, TypeError):
                 pass
-        elif self.instance.pk:
-            print(self.instance.pk)
-            self.fields['subcategory_id'].queryset = self.instance.department.subcategory_set.order_by('subcategory_name')
+        # elif self.instance.pk:
+        #     self.fields['subcategory_id'].queryset = self.instance.department.subcategory_set.order_by('subcategory_name')
 
 
 class UpdateTicketForm(forms.ModelForm):
