@@ -11,9 +11,12 @@ class TicketForm(forms.ModelForm):
         exclude = ['department_id', 'author', 'custom_id']
 
     def __init__(self, *args, **kwargs):
+        department_id = kwargs.pop('department_id')
         super(TicketForm, self).__init__(*args, **kwargs)
-        self.fields['category_id'].queryset = Category.objects.all().filter(department_id=self.instance.pk)
+        self.fields['category_id'].queryset = Category.objects.all().filter(department_id=department_id)
         self.fields['subcategory_id'].queryset = Subcategory.objects.none()
+
+        # print(self.data)
 
         if 'category_id' in self.data:
             try:
@@ -29,7 +32,7 @@ class UpdateTicketForm(forms.ModelForm):
     class Meta:
         model = Ticket
         fields = '__all__'
-        exclude = ['department_id', 'custom_id', 'slug', 'author']
+        exclude = ['department_id', 'custom_id', 'author']
 
     def __init__(self, *args, **kwargs):
         # department_slug = kwargs.pop('department_slug')

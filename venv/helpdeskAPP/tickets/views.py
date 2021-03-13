@@ -4,6 +4,7 @@ from django.urls import reverse_lazy
 from django.shortcuts import render, get_object_or_404
 from .models import Department, Ticket, Category, Subcategory, Comment
 from django.template.loader import render_to_string
+from datetime import datetime
 
 from .forms import TicketForm, UpdateTicketForm, CommentForm
 
@@ -74,35 +75,31 @@ class AllTickets(ListView):
 
 def save_ticket_form(request, form, template_name, department_id, user, custom_id):
     data = dict()
+    department = get_object_or_404(Department, id=department_id)
     if request.method == 'POST':
         if form.is_valid():
-            # form.instance.department_id = department_id
-            # form.instance.author = user
-            # form.instance.custom_id = Ticket.objects.filter(department_id=department_id).count() + 1
-            # print(form)
-            ticket = form.save(commit=False)
-            ticket.author = user
-            ticket.save()
-            print(ticket)
+            new_instance = form.save(commit=False)
+            new_instance.department_id_id = department_id
+            new_instance.author = user
+            new_instance.custom_id = custom_id
+            new_instance.created = datetime.now()
+            new_instance.save()
             data['form_is_valid'] = True
-            # tickets = Ticket.objects.all()
-            # data['html_ticket_list'] = render_to_string('tickets/department/my_ticket_list.html', {'tickets': tickets})
-            # return render(request, 'tickets/department/my_ticket_list.html')
         else:
             data['form_is_valid'] = False
-    context = {'form': form}
+    context = {'form': form, 'department': department}
     data['html_form'] = render_to_string(template_name, context, request=request)
     return JsonResponse(data)
 
 
 def ticket_create(request, department_slug, department_id):
-    department = get_object_or_404(Department, slug=department_slug, id=department_id)
     user = request.user
     custom_id = Ticket.objects.filter(department_id=department_id).count() + 1
+    print(custom_id)
     if request.method == 'POST':
-        form = TicketForm(request.POST, instance=department)
+        form = TicketForm(request.POST, department_id=department_id, initial={'department_id': department_id, 'author': user, 'custom_id': custom_id})
     else:
-        form = TicketForm(instance=department)
+        form = TicketForm(department_id=department_id, initial={'department_id': department_id, 'author': user, 'custom_id': custom_id})
     return save_ticket_form(request, form, 'tickets/department/submit_ticket.html', department_id, user, custom_id)
 
 
