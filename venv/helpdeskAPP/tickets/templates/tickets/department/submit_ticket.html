@@ -9,43 +9,34 @@
             <div class="panel panel-primary">
                 <div class="panel-heading">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h4 class="panel-title">Submit Ticket</h4>
+                    <h4 class="panel-title">Submit {% if department %}{{ department.department_name }}{% endif %} Ticket </h4>
                 </div>
                 <div class="modal-body" style="padding: 5px;">
                       <div class="row">
-                            <div class="col-lg-6 col-md-6 col-sm-6" style="padding-bottom: 10px;">
+                            <div class="col-lg-2 col-md-2 col-sm-2" style="padding-bottom: 10px;">
                                 {{ form.category_id|as_crispy_field }}
-<!--                                <input class="form-control" name="firstname" placeholder="Firstname" type="text" required autofocus />-->
                             </div>
-                            <div class="col-lg-6 col-md-6 col-sm-6" style="padding-bottom: 10px;">
+                            <div class="col-lg-3 col-md-3 col-sm-3" style="padding-bottom: 10px;">
                                 {{ form.subcategory_id|as_crispy_field }}
-<!--                                <input class="form-control" name="lastname" placeholder="Lastname" type="text" required />-->
                             </div>
-                        </div>
-                      <div class="row">
-                            <div class="col-lg-6 col-md-6 col-sm-6" style="padding-bottom: 10px;">
+                            <div class="col-lg-2 col-md-2 col-sm-2" style="padding-bottom: 10px;">
                                 {{ form.status|as_crispy_field }}
-<!--                                <input class="form-control" name="firstname" placeholder="Firstname" type="text" required autofocus />-->
                             </div>
-                            <div class="col-lg-6 col-md-6 col-sm-6" style="padding-bottom: 10px;">
+                            <div class="col-lg-2 col-md-2 col-sm-2" style="padding-bottom: 10px;">
                                 {{ form.priority|as_crispy_field }}
-<!--                                <input class="form-control" name="lastname" placeholder="Lastname" type="text" required />-->
                             </div>
-                            <div class="col-lg-6 col-md-6 col-sm-6" style="padding-bottom: 10px;">
+                            <div class="col-lg-2 col-md-2 col-sm-2" style="padding-bottom: 10px;">
                                 {{ form.assigned_to|as_crispy_field }}
-<!--                                <input class="form-control" name="lastname" placeholder="Lastname" type="text" required />-->
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-lg-12 col-md-12 col-sm-12" style="padding-bottom: 10px;">
                                 {{ form.title|as_crispy_field }}
-<!--                                <input class="form-control" name="email" placeholder="E-mail" type="text" required />-->
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-lg-12 col-md-12 col-sm-12">
                                 {{ form.body|as_crispy_field }}
-<!--                                <textarea style="resize:vertical;" class="form-control" placeholder="Message..." rows="6" name="comment" required></textarea>-->
                             </div>
                         </div>
                     </div>
@@ -58,43 +49,6 @@
                     </div>
                 </div>
             </div>
-<!--          <div class="modal-header">-->
-<!--              <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
-<!--                  <span aria-hidden="true">&times;</span>-->
-<!--              </button>-->
-<!--              <h4 class="modal-title">Submit Ticket</h4>-->
-<!--          </div>-->
-<!--          <div class="modal-body">-->
-<!--                <div class="col-6">-->
-<!--                    <div class="row">-->
-<!--                        <div class="col-6">-->
-<!--                            {{ form.category_id|as_crispy_field }}-->
-<!--                        </div>-->
-<!--                        <div class="col-6">-->
-<!--                            {{ form.subcategory_id|as_crispy_field }}-->
-<!--                        </div>-->
-<!--                        <div class="col-6">-->
-<!--                            {{ form.status|as_crispy_field }}-->
-<!--                        </div>-->
-<!--                        <div class="col-6">-->
-<!--                            {{ form.priority|as_crispy_field }}-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                    <div class="row">-->
-<!--                        <div class="col-6">-->
-<!--                            {{ form.title|as_crispy_field }}-->
-<!--                        </div>-->
-<!--                        <div class="col-6">-->
-<!--                            {{ form.assigned_to|as_crispy_field }}-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                    {{ form.body|as_crispy_field }}-->
-<!--                </div>-->
-<!--          </div>-->
-<!--          <div class="modal-footer">-->
-<!--            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>-->
-<!--            <button type="submit" class="btn btn-primary">Submit Ticket</button>-->
-<!--          </div>-->
         </form>
 
         <script>

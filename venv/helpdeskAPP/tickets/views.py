@@ -6,7 +6,7 @@ from .models import Department, Ticket, Category, Subcategory, Comment
 from django.template.loader import render_to_string
 from datetime import datetime
 
-from .forms import TicketForm, UpdateTicketForm, CommentForm
+from .forms import TicketForm, CommentForm
 
 
 # Create your views here.
@@ -95,12 +95,39 @@ def save_ticket_form(request, form, template_name, department_id, user, custom_i
 def ticket_create(request, department_slug, department_id):
     user = request.user
     custom_id = Ticket.objects.filter(department_id=department_id).count() + 1
-    print(custom_id)
     if request.method == 'POST':
         form = TicketForm(request.POST, department_id=department_id, initial={'department_id': department_id, 'author': user, 'custom_id': custom_id})
     else:
         form = TicketForm(department_id=department_id, initial={'department_id': department_id, 'author': user, 'custom_id': custom_id})
     return save_ticket_form(request, form, 'tickets/department/submit_ticket.html', department_id, user, custom_id)
+
+
+def save_ticket_form_update(request, form, template_name, department_id):
+    data = dict()
+    department = get_object_or_404(Department, id=department_id)
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            data['form_is_valid'] = True
+            # tickets = Ticket.objects.all().filter(assigned_to=request.user)
+            # print(tickets)
+            # data['html_ticket_list'] = render_to_string('tickets/department/partial_ticket_list.html', {
+            #     'tickets': tickets
+            # })
+        else:
+            data['form_is_valid'] = False
+    context = {'form': form, 'department': department}
+    data['html_form'] = render_to_string(template_name, context, request=request)
+    return JsonResponse(data)
+
+
+def ticket_update(request, department_id, id):
+    ticket = get_object_or_404(Ticket, id=id)
+    if request.method == 'POST':
+        form = TicketForm(request.POST, instance=ticket, department_id=department_id)
+    else:
+        form = TicketForm(instance=ticket, department_id=department_id)
+    return save_ticket_form_update(request, form, 'tickets/department/update_ticket.html', department_id)
 
 
 class TicketDetailView(DetailView):
@@ -138,32 +165,32 @@ class TicketDetailView(DetailView):
         return get_object_or_404(Ticket, department_id=department_id, id=id_)
 
 
-class UpdateTicket(UpdateView):
-    template_name = 'tickets/department/update_ticket.html'
-    form_class = UpdateTicketForm
-    # queryset = Ticket.objects.all()
-
-    def get_form_kwargs(self):
-        kwargs = super(UpdateTicket, self).get_form_kwargs()
-        kwargs.update(self.kwargs)
-        return kwargs
-
-    def get_object(self):
-        id_ = self.kwargs.get('id')
-        department_id = self.kwargs.get('department_id')
-        return get_object_or_404(Ticket, department_id=department_id, id=id_)
-
-    def dispatch(self, request, *args, **kwargs):
-        self.department_id = get_object_or_404(Department, pk=kwargs['department_id'])
-        return super().dispatch(request, *args, **kwargs)
-
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        form.instance.department_id = self.department_id
-        return super(UpdateTicket, self).form_valid(form)
-
-    def get_success_url(self):
-        return 'ticket_detail'
+# class UpdateTicket(UpdateView):
+#     template_name = 'tickets/department/update_ticket.html'
+#     form_class = UpdateTicketForm
+#     # queryset = Ticket.objects.all()
+#
+#     def get_form_kwargs(self):
+#         kwargs = super(UpdateTicket, self).get_form_kwargs()
+#         kwargs.update(self.kwargs)
+#         return kwargs
+#
+#     def get_object(self):
+#         id_ = self.kwargs.get('id')
+#         department_id = self.kwargs.get('department_id')
+#         return get_object_or_404(Ticket, department_id=department_id, id=id_)
+#
+#     def dispatch(self, request, *args, **kwargs):
+#         self.department_id = get_object_or_404(Department, pk=kwargs['department_id'])
+#         return super().dispatch(request, *args, **kwargs)
+#
+#     def form_valid(self, form):
+#         form.instance.author = self.request.user
+#         form.instance.department_id = self.department_id
+#         return super(UpdateTicket, self).form_valid(form)
+#
+#     def get_success_url(self):
+#         return 'ticket_detail'
 
 
 def load_subcategories(request):

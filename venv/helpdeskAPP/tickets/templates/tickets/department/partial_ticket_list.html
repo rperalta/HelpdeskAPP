@@ -1,0 +1,26 @@
+{% for tickets in d.ticket %}
+{% for t in tickets %}
+  <tr>
+      <th scope="row">{{ t.custom_id }}</th>
+      <td><a class="btn btn-link" href="{% url 'tickets:ticket_detail' d.department.id t.id %}">{{ t.title }}</a></td>
+      <td>{{ t.author }}</td>
+      <td>{{ t.assigned_to }}</td>
+      <td>{{ t.created|date:"M d, Y" }}</td>
+      <td>{{ t.due_date|date:"M d, Y" }}</td>
+      <td>{{ t.updated|date:"M d, Y" }}</td>
+      <td>{{ t.get_status_display }}</td>
+      <td>
+          <button type="button"
+                  class="btn btn-light btn-sm js-update-ticket"
+                  data-url="{% url 'tickets:update_ticket' d.department.id t.id %}">
+              <span class="glyphicon glyphicon-pencil"></span> Edit
+          </button>
+      </td>
+<!--                      <td><a class="btn btn-light" href="{% url 'tickets:update_ticket' d.department.id t.id %}">Edit</a></td>-->
+  </tr>
+{% empty %}
+    <tr>
+        <td colspan="7" class="text-center bg-warning">No data available</td>
+    </tr>
+{% endfor %}
+{% endfor %}

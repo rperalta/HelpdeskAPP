@@ -1,7 +1,6 @@
 {% extends "tickets/base.html" %}
 {% load static %}
 
-<link rel="stylesheet" href="https://npmcdn.com/react-bootstrap-table/dist/react-bootstrap-table.min.css">
 
 {% block title %}
   {% if department %}
@@ -95,7 +94,6 @@
                             {% if user.is_authenticated %}
                             <li class="nav-item">
                                 <a class="nav-link" id="customUserMenu1" href="#userMenu" data-toggle="collapse" aria-expanded="false">{{ user.username }}</a>
-<!--                                <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Home</a>-->
                                 <ul class="collapse list-unstyled" id="userMenu">
                                     <li>
                                         <a class="nav-link" id="customUserMenu2" href="{% url 'logout'%}?next=/accounts/login">Sign out</a>
@@ -113,7 +111,8 @@
             </nav>
 
             {% for d in all_tickets.all_data %}
-            <table class="table table-responsive-sm table-hover" id="tableOne">
+            <div id="tabletickets">
+            <table class="table table-responsive-sm table-hover" id="ticket-table-{{ d.department.id }}">
                 <h3>{{ d.department }}</h3>
                 <thead class="thead-light">
                   <tr>
@@ -129,33 +128,21 @@
                   </tr>
                 </thead>
                 <tbody>
-                {% for tickets in d.ticket %}
-                {% for t in tickets %}
-                  <tr>
-                      <th scope="row">{{ t.custom_id }}</th>
-                      <td><a class="btn btn-link" href="{% url 'tickets:ticket_detail' d.department.id t.id %}">{{ t.title }}</a></td>
-                      <td>{{ t.author }}</td>
-                      <td>{{ t.assigned_to }}</td>
-                      <td>{{ t.created|date:"M d, Y" }}</td>
-                      <td>{{ t.due_date|date:"M d, Y" }}</td>
-                      <td>{{ t.updated|date:"M d, Y" }}</td>
-                      <td>{{ t.get_status_display }}</td>
-                      <td><a class="btn btn-light" href="{% url 'tickets:update_ticket' d.department.id t.id %}">Edit</a></td>
-                  </tr>
-                {% empty %}
-                    <tr>
-                        <td colspan="7" class="text-center bg-warning">No data available</td>
-                    </tr>
-                {% endfor %}
-                {% endfor %}
+                    {% include "tickets/department/partial_ticket_list.html" %}
                 </tbody>
               </table>
+            </div>
             {% endfor %}
         </div>
     </div>
 
+    <div class="modal fade" id="modal-ticket">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
 
-    <link rel="stylesheet" href="https://npmcdn.com/react-bootstrap-table/dist/react-bootstrap-table.min.css">
+          </div>
+        </div>
+    </div>
 
     <script type="text/javascript">
         $(document).ready(function () {
@@ -163,6 +150,55 @@
                 $('#sidebar').toggleClass('active');
                 $(this).toggleClass('active');
             });
+        });
+
+        $(function () {
+            var loadForm = function () {
+            var btn = $(this);
+            console.log(btn);
+            $.ajax({
+              url: btn.attr('data-url'),
+              type: 'get',
+              dataType: 'json',
+              beforeSend: function () {
+                $("#modal-ticket").modal("show");
+              },
+              success: function (data) {
+                $("#modal-ticket .modal-content").html(data.html_form);
+              }
+            });
+          };
+
+          var saveForm = function () {
+            var form = $(this);
+            $.ajax({
+              url: form.attr("action"),
+              data: form.serialize(),
+              type: form.attr("method"),
+              dataType: 'json',
+              success: function (data) {
+                if (data.form_is_valid) {
+                  // $("#ticket-table tbody").html(data.html_ticket_list);
+                  // $("#modal-ticket").modal("hide");
+                  location.reload();
+                }
+                else {
+                  $("#modal-ticket .modal-content").html(data.html_form);
+                }
+              }
+            });
+            return false;
+          };
+
+         // Create ticket
+         $(".js-submit-ticket").click(loadForm);
+         $("#modal-ticket").on("submit", ".js-ticket-create-form", saveForm);
+
+         // Update ticket
+         $("#ticket-table-2").on("click", ".js-update-ticket", loadForm);
+         $("#ticket-table-3").on("click", ".js-update-ticket", loadForm);
+         $("#modal-ticket").on("submit", ".js-ticket-update-form", saveForm);
+
         });
     </script>
 
