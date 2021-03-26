@@ -16,6 +16,13 @@
               <span class="glyphicon glyphicon-pencil"></span> Edit
           </button>
       </td>
+      <td>
+          <button type="button"
+                  class="btn btn-light btn-sm js-transfer-ticket"
+                  data-url="{% url 'tickets:transfer_ticket' d.department.id t.id %}">
+              <span class="glyphicon glyphicon-pencil"></span> Transfer
+          </button>
+      </td>
 <!--                      <td><a class="btn btn-light" href="{% url 'tickets:update_ticket' d.department.id t.id %}">Edit</a></td>-->
   </tr>
 {% empty %}

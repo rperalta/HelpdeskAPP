@@ -5,8 +5,9 @@ from django.shortcuts import render, get_object_or_404
 from .models import Department, Ticket, Category, Subcategory, Comment
 from django.template.loader import render_to_string
 from datetime import datetime
+from django.db.models import Max
 
-from .forms import TicketForm, CommentForm
+from .forms import TicketForm, CommentForm, TicketTransferForm
 
 
 # Create your views here.
@@ -130,6 +131,60 @@ def ticket_update(request, department_id, id):
     return save_ticket_form_update(request, form, 'tickets/department/update_ticket.html', department_id)
 
 
+def save_ticket_form_transfer(request, form, template_name, department_id, ticket):
+    data = dict()
+    department = get_object_or_404(Department, id=department_id)
+    dep_id = form['department_id'].value()
+    cid = Ticket.objects.filter(department_id=dep_id).aggregate(custom_id=Max('custom_id'))
+    custom_id = cid.get('custom_id')+1
+    if request.method == 'POST':
+        if form.is_valid():
+            new_instance = form.save(commit=False)
+            new_instance.custom_id = custom_id
+            new_instance.status = ticket.status
+            new_instance.priority = ticket.priority
+            new_instance.title = ticket.title
+            new_instance.author = ticket.author
+            new_instance.assigned_to = ticket.assigned_to
+            new_instance.body = ticket.body
+            new_instance.due_date = ticket.due_date
+            new_instance.created = ticket.created
+            new_instance.updated = ticket.updated
+            new_instance.save()
+            data['form_is_valid'] = True
+            # tickets = Ticket.objects.all().filter(assigned_to=request.user)
+            # print(tickets)
+            # data['html_ticket_list'] = render_to_string('tickets/department/partial_ticket_list.html', {
+            #     'tickets': tickets
+            # })
+        else:
+            data['form_is_valid'] = False
+    context = {'form': form, 'department': department}
+    data['html_form'] = render_to_string(template_name, context, request=request)
+    return JsonResponse(data)
+
+
+def ticket_transfer(request, department_id, id):
+    ticket = get_object_or_404(Ticket, id=id)
+    custom_id = Ticket.objects.filter(department_id=department_id).count() + 1
+    # cid = Ticket.objects.filter().aggregate(department_id=department_id, custom_id=Max('custom_id'))
+    # custom_id = cid.get('custom_id')+1
+    if request.method == 'POST':
+        form = TicketTransferForm(request.POST, instance=ticket, department_id=department_id,
+                                  initial={'custom_id': custom_id, 'status': ticket.status, 'priority': ticket.priority,
+                                           'title': ticket.title, 'author': ticket.author, 'assigned_to': ticket.assigned_to,
+                                           'body': ticket.body, 'due_date': ticket.due_date, 'created': ticket.created,
+                                           'updated': ticket.updated})
+    else:
+        form = TicketTransferForm(instance=ticket, department_id=department_id,
+                                  initial={'custom_id': custom_id, 'status': ticket.status, 'priority': ticket.priority,
+                                           'title': ticket.title, 'author': ticket.author, 'assigned_to': ticket.assigned_to,
+                                           'body': ticket.body, 'due_date': ticket.due_date, 'created': ticket.created,
+                                           'updated': ticket.updated})
+    return save_ticket_form_transfer(request, form, 'tickets/department/transfer_ticket.html', department_id, ticket)
+
+
+
 class TicketDetailView(DetailView):
     model = Ticket
     template_name = 'tickets/department/ticket_details.html'
@@ -197,6 +252,14 @@ def load_subcategories(request):
     category_id = request.GET.get('category_id')
     subcategories = Subcategory.objects.filter(category_id=category_id).order_by('subcategory_name')
     return render(request, 'tickets/department/subcategory_dropdown.html', {'subcategories': subcategories})
+
+
+def load_department_subcategories(request):
+    department_id = request.GET.get('department_id')
+    categories = Category.objects.filter(department_id=department_id).order_by('category_name')
+    category_id = request.GET.get('category_id')
+    subcategories = Subcategory.objects.filter(category_id=category_id).order_by('subcategory_name')
+    return render(request, 'tickets/department/department_subcategory_dropdown.html', {'categories': categories, 'subcategories': subcategories})
 
 
 class CreateComment(CreateView):

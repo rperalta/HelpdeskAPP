@@ -15,6 +15,8 @@ urlpatterns = [
     path('<int:department_id>/<int:id>/ticket_detail', TicketDetailView.as_view(), name='ticket_detail'),
     # path('<int:department_id>/<int:id>/update_ticket', UpdateTicket.as_view(), name='update_ticket'),
     path('<int:department_id>/<int:id>/update_ticket', views.ticket_update, name='update_ticket'),
+    path('<int:department_id>/<int:id>/transfer_ticket', views.ticket_transfer, name='transfer_ticket'),
     path('ajax/load_subcategories/', views.load_subcategories, name='ajax_load_subcategories'),
+    path('ajax/load_department_subcategories/', views.load_department_subcategories, name='ajax_load_department_subcategories'),
     path('<int:id>/create_comment', CreateComment.as_view(), name='create_comment'),
 ]

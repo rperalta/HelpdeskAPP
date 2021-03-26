@@ -28,6 +28,40 @@ class TicketForm(forms.ModelForm):
             self.fields['subcategory_id'].queryset = self.instance.category_id.subcategory_set.order_by('subcategory_name')
 
 
+class TicketTransferForm(forms.ModelForm):
+    #category_id = ModelChoiceField(queryset=Category.objects.none())
+    class Meta:
+        model = Ticket
+        fields = ['department_id', 'category_id', 'subcategory_id']
+        exclude = ['custom_id', 'status', 'priority', 'title', 'author', 'assigned_to', 'body', 'due_date', 'created', 'updated']
+
+    def __init__(self, *args, **kwargs):
+        department_id = kwargs.pop('department_id')
+        super(TicketTransferForm, self).__init__(*args, **kwargs)
+        self.fields['category_id'].queryset = Category.objects.all().filter(department_id=department_id)
+        self.fields['subcategory_id'].queryset = Subcategory.objects.none()
+
+        # print(self.data)
+
+        if 'department_id' in self.data:
+            try:
+                department_id = int(self.data.get('department_id'))
+                self.fields['category_id'].queryset = Category.objects.filter(department_id=department_id).order_by('category_name')
+            except (ValueError, TypeError):
+                pass
+        elif self.instance.pk:
+            self.fields['category_id'].queryset = self.instance.department_id.category_set.order_by('category_name')
+
+        if 'category_id' in self.data:
+            try:
+                category_id = int(self.data.get('category_id'))
+                self.fields['subcategory_id'].queryset = Subcategory.objects.filter(category_id=category_id).order_by('subcategory_name')
+            except (ValueError, TypeError):
+                pass
+        elif self.instance.pk:
+            self.fields['subcategory_id'].queryset = self.instance.category_id.subcategory_set.order_by('subcategory_name')
+
+
 # class UpdateTicketForm(forms.ModelForm):
 #     class Meta:
 #         model = Ticket

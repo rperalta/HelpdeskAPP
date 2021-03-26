@@ -232,7 +232,7 @@ a.article, a.article:hover {
     }
 }
 
-#ticket-table thead th {
+#tabletickets table[id^='ticket-table-'] thead th {
   background-color: #7386D5;
   color: white;
 }
@@ -244,7 +244,7 @@ a.article, a.article:hover {
   overflow: auto;
 }
 
-#ticket-table thead,
+#tabletickets table[id^='ticket-table-'] thead,
 .tbody {
   /*display: block;*/
   display: table-header-group;

@@ -125,6 +125,7 @@
                     <th scope="col">Updated</th>
                     <th scope="col">Status</th>
                     <th scope="col">Edit</th>
+                    <th scope="col">Transfer</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -155,7 +156,6 @@
         $(function () {
             var loadForm = function () {
             var btn = $(this);
-            console.log(btn);
             $.ajax({
               url: btn.attr('data-url'),
               type: 'get',
@@ -195,9 +195,12 @@
          $("#modal-ticket").on("submit", ".js-ticket-create-form", saveForm);
 
          // Update ticket
-         $("#ticket-table-2").on("click", ".js-update-ticket", loadForm);
-         $("#ticket-table-3").on("click", ".js-update-ticket", loadForm);
+         $("[id^='ticket-table-']").on("click", ".js-update-ticket", loadForm);
          $("#modal-ticket").on("submit", ".js-ticket-update-form", saveForm);
+
+         // Transfer ticket
+         $("[id^='ticket-table-']").on("click", ".js-transfer-ticket", loadForm);
+         $("#modal-ticket").on("submit", ".js-ticket-transfer-form", saveForm);
 
         });
     </script>
