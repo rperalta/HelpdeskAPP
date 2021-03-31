@@ -22,7 +22,9 @@ CELERY_BROKER_URL = 'amqp://localhost'
 
 CELERY_TIMEZONE = 'Pacific/Honolulu'
 
-CELERY_BEAT_SCHEDULE = {}
+CELERY_BEAT_SCHEDULE = {
+
+}
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
